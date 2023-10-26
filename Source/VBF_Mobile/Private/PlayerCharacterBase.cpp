@@ -42,7 +42,6 @@ void APlayerCharacterBase::BeginPlay()
 	if (ULocalPlayer* LocalPlayer = Cast<ULocalPlayer>(UGameplayStatics::GetPlayerController(this, 0)->GetLocalPlayer())) {
 		UEnhancedInputLocalPlayerSubsystem* InputSystem = LocalPlayer->GetSubsystem<UEnhancedInputLocalPlayerSubsystem>();
 		InputSystem->AddMappingContext(IMC_Main, 1);
-		UKismetSystemLibrary::PrintString(this, "Done");
 	}
 
 }
