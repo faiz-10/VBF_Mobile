@@ -8,6 +8,8 @@
 #include "Kismet/GameplayStatics.h"
 #include "EnhancedInputComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
+#include "Net/UnrealNetwork.h"
+
 
 // Sets default values
 APlayerCharacterBase::APlayerCharacterBase()
@@ -23,7 +25,8 @@ APlayerCharacterBase::APlayerCharacterBase()
 
 	CameraBoom->TargetArmLength = 400.f;
 
-	CameraBoom->bUsePawnControlRotation = true;
+	//CameraBoom->bUsePawnControlRotation = true;
+	TPPCamera->bUsePawnControlRotation = true;
 
 	bUseControllerRotationPitch = false;
 	bUseControllerRotationRoll = false;
@@ -31,7 +34,16 @@ APlayerCharacterBase::APlayerCharacterBase()
 
 	GetCharacterMovement()->bOrientRotationToMovement = true;
 
+	MaxHealth = 200.f;
+	CurrentHealth = MaxHealth;
 
+}
+
+void APlayerCharacterBase::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
+{
+	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+
+	DOREPLIFETIME(APlayerCharacterBase, CurrentHealth);
 }
 
 // Called when the game starts or when spawned
@@ -67,6 +79,38 @@ void APlayerCharacterBase::PlayerSight(const FInputActionValue &Value)
 	AddControllerYawInput(Input.Y);
 }
 
+void APlayerCharacterBase::PlayerAttack(const FInputActionValue& Value)
+{
+	FVector StartPos = TPPCamera->GetComponentLocation();
+	FVector EndPos = StartPos + TPPCamera->GetForwardVector() * 50000;
+	TEnumAsByte<EObjectTypeQuery> TypesEnum {EObjectTypeQuery::ObjectTypeQuery3};
+	TArray<TEnumAsByte<EObjectTypeQuery>> TargetActorType;
+	TargetActorType.Add(TypesEnum);
+	TArray<AActor*> ActorsToIgnore;
+	FHitResult OutHitResult;
+	UKismetSystemLibrary::LineTraceSingleForObjects(this, StartPos, EndPos, TargetActorType, 1, ActorsToIgnore, EDrawDebugTrace::Persistent,OutHitResult, 1);
+
+
+}
+
+void APlayerCharacterBase::OnRep_CurrHealth()
+{
+	OnHealthUpdate();
+}
+
+void APlayerCharacterBase::OnHealthUpdate()
+{
+	if (IsLocallyControlled()) {
+		// Client Specific functionality
+	}
+
+	if (GetLocalRole() == ROLE_Authority) {
+		// Server Specific functionality
+	}
+
+	// functionality that occurs on both
+}
+
 // Called every frame
 void APlayerCharacterBase::Tick(float DeltaTime)
 {
@@ -83,6 +127,7 @@ void APlayerCharacterBase::SetupPlayerInputComponent(UInputComponent* PlayerInpu
 
 	PlayerInput->BindAction(IA_Look, ETriggerEvent::Triggered, this, &APlayerCharacterBase::PlayerSight);
 	PlayerInput->BindAction(IA_Move, ETriggerEvent::Triggered, this, &APlayerCharacterBase::PlayerMovement);
+	PlayerInput->BindAction(IA_Fire, ETriggerEvent::Triggered, this, &APlayerCharacterBase::PlayerAttack);
 
 }
 

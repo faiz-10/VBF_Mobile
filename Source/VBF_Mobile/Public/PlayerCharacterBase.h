@@ -17,6 +17,8 @@ public:
 	// Sets default values for this character's properties
 	APlayerCharacterBase();
 
+	void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
+
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
@@ -30,11 +32,24 @@ protected:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
 		UInputAction* IA_Look;
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
+		UInputAction* IA_Fire;
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
 		UInputMappingContext* IMC_Main;
+	
 
 
 	void PlayerMovement(const FInputActionValue& Value);
 	void PlayerSight(const FInputActionValue &Value);
+	void PlayerAttack(const FInputActionValue& Value);
+
+	UPROPERTY(EditDefaultsOnly, Category = "Health")
+		float MaxHealth;
+	UPROPERTY(ReplicatedUsing = OnRep_CurrHealth)
+		float CurrentHealth;
+
+	UFUNCTION()
+		void OnRep_CurrHealth();
+	void OnHealthUpdate();
 
 public:	
 	// Called every frame

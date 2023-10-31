@@ -20,8 +20,13 @@ public:
 	UFUNCTION(BlueprintCallable)
 		void LoadInfo();
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
 		FString LoadedName;
 
 	void LoadedGameDelegateFunction(const FString& SlotName, const int32 UserIndex, USaveGame* LoadedGameData);
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+		USaveGameInfo* LoadedInfo;
+
+	ALobbyPlayerController();
 };

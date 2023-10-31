@@ -16,4 +16,5 @@ void ALoginPlayerController::SaveInfo(FString PlayerName)
 
 void ALoginPlayerController::SaveGameDelegateFunction(const FString& SlotName, const int32 UserIndex, bool Success)
 {
+
 }

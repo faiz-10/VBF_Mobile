@@ -14,5 +14,11 @@ void ALobbyPlayerController::LoadInfo()
 
 void ALobbyPlayerController::LoadedGameDelegateFunction(const FString& SlotName, const int32 UserIndex, USaveGame* LoadedGameData)
 {
+	LoadedInfo = Cast<USaveGameInfo>(LoadedGameData);
+	LoadedName = LoadedInfo->PlayerName;
+}
+
+ALobbyPlayerController::ALobbyPlayerController()
+{
 	
 }
